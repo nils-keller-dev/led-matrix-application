@@ -1,4 +1,6 @@
 import json
+from controller import led_matrix_controller
+from deepmerge import always_merger
 
 class Database:
   def get_state(self) -> dict:
@@ -12,5 +14,6 @@ class Database:
 
   def patch_state(self, new_data: dict):
     state = self.get_state()
-    state.update(new_data)
+    state = always_merger.merge(state, new_data)
+    led_matrix_controller.update_state(state)
     self.set_state(state)

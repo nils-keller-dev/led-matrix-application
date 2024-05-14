@@ -46,6 +46,17 @@ files = [
 ]
 
 [[package]]
+name = "deepmerge"
+version = "1.1.1"
+description = "a toolset to deeply merge python dictionaries."
+optional = false
+python-versions = "*"
+files = [
+    {file = "deepmerge-1.1.1-py3-none-any.whl", hash = "sha256:7219dad9763f15be9dcd4bcb53e00f48e4eed6f5ed8f15824223eb934bb35977"},
+    {file = "deepmerge-1.1.1.tar.gz", hash = "sha256:53a489dc9449636e480a784359ae2aab3191748c920649551c8e378622f0eca4"},
+]
+
+[[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -600,4 +611,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "3e39a8a21aa70160094582d77822b5dcbbfbcc9e8908915652ce03c320fa1210"
+content-hash = "aae24cbff2757d3019ac4150e3da9e15bb689889cf34be9edc7be81034689129"
