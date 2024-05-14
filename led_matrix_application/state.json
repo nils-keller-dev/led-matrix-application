@@ -1,1 +1,0 @@
-{"global": {"mode": "clock", "brightness": 100}, "text": {"text": "test text", "vertical": false, "speed": 2, "font": "5x8.bdf", "color": [255, 0, 123]}, "image": {"image": "image_example.jpg"}, "clock": {"color": [255, 0, 255]}}
