@@ -12,9 +12,6 @@ class ClockMode(AbstractMode):
         self.font.LoadFont("fonts/9x18.bdf")
         self.offscreen_canvas = matrix.CreateFrameCanvas()
 
-    def stop(self):
-        pass
-
     def update_settings(self, settings):
         self.settings = settings
 
