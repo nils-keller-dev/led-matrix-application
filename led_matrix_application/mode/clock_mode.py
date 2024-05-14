@@ -18,14 +18,16 @@ class ClockMode(AbstractMode):
     def update_display(self):
         self.offscreen_canvas.Clear()
         awareTime = datetime.now(self.timezone)
+        timeHours = awareTime.strftime("%H")
+        timeMinutes = awareTime.strftime("%M")
+        
+        graphics.DrawText(self.offscreen_canvas, self.font, 10, 16, graphics.Color(*self.settings['color']), timeHours)
         if (time.mktime(awareTime.timetuple()) % 2 == 0):
-            displayTime = awareTime.strftime("%H %M")
-        else:
-            displayTime = awareTime.strftime("%H:%M")
+            graphics.DrawText(self.offscreen_canvas, self.font, 27, 15, graphics.Color(*self.settings['color']), ":")
+        graphics.DrawText(self.offscreen_canvas, self.font, 36, 16, graphics.Color(*self.settings['color']), timeMinutes)
 
-        displayDate = date.today().strftime("%d.%b")
-        graphics.DrawText(self.offscreen_canvas, self.font, 10, 16, graphics.Color(*self.settings['color']), displayTime)
+        displayDate = date.today().strftime("%d %b")
         graphics.DrawText(self.offscreen_canvas, self.font, 5, 58, graphics.Color(*self.settings['color']), displayDate)
-        time.sleep(0.1)
+        graphics.DrawText(self.offscreen_canvas, self.font, 20, 58, graphics.Color(*self.settings['color']), ".")
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
