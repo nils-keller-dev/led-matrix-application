@@ -8,4 +8,4 @@ class MusicMode(AbstractMode):
         self.settings = settings
 
     def update_display(self):
-        self.matrix.Fill(0, 0, 0)
+        self.matrix.Fill(0, 0, 255)
