@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "led-matrix-application"
+version = "0.1.0"
+description = ""
+authors = ["tsomic <keller.nils99@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.taskipy.tasks]
+start = "bash scripts/start.sh"
+dev = "bash scripts/dev.sh"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+starlette = "^0.37.2"
+hypercorn = "^0.16.0"
+
+[tool.poetry.group.dev.dependencies]
+rgbmatrixemulator = "^0.11.4"
+taskipy = "^1.12.2"
+watchdog = {extras = ["watchmedo"], version = "^4.0.0"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

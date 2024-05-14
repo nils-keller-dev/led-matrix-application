@@ -1,0 +1,1 @@
+{"global": {"mode": "TEXT", "brightness": 100, "color": [255, 0, 123]}, "text": {"text": "test text", "vertical": false, "speed": 2, "font": "5x8.bdf"}, "image": {"image": "image_example.jpg"}}
