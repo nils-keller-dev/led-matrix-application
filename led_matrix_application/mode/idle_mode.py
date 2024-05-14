@@ -1,11 +1,12 @@
 from mode.abstract_mode import AbstractMode
+import time
 
 class IdleMode(AbstractMode):
     def start(self, matrix):
-        self.matrix = matrix
+        matrix.Clear()
 
     def update_settings(self, settings):
-        self.settings = settings
+        pass
 
     def update_display(self):
-        self.matrix.Fill(0, 0, 0)
+        time.sleep(1)
