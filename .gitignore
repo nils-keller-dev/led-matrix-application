@@ -1,3 +1,4 @@
 led_matrix_application/webapp
 led_matrix_application/state.json
 __pycache__
+.env
