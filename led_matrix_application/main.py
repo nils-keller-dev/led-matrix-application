@@ -1,9 +1,11 @@
+import threading
+
 from starlette.applications import Starlette
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
-from controller import led_matrix_controller
+
 from api import routes as api_routes
-import threading
+from controller import led_matrix_controller
 from database import Database
 
 WEBSERVER_DIR = "webapp"

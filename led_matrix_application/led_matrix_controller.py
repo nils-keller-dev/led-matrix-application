@@ -1,4 +1,5 @@
 from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
+
 from mode.idle_mode import IdleMode
 from mode.clock_mode import ClockMode
 from mode.text_mode import TextMode

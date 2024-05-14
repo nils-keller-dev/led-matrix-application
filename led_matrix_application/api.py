@@ -1,5 +1,6 @@
 from starlette.routing import Route
 from starlette.responses import JSONResponse
+
 from database import Database
 
 db = Database()

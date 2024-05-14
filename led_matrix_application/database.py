@@ -1,4 +1,5 @@
 import json
+
 from controller import led_matrix_controller
 
 def custom_merge(dict1, dict2):
