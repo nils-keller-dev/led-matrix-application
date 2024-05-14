@@ -4,6 +4,7 @@ from starlette.staticfiles import StaticFiles
 from controller import led_matrix_controller
 from api import routes as api_routes
 import threading
+from database import Database
 
 WEBSERVER_DIR = "webapp"
 routes = [
@@ -13,4 +14,6 @@ routes = [
  
 app = Starlette(routes=routes)
 
+db = Database()
+led_matrix_controller.update_state(db.get_state())
 threading.Thread(target=led_matrix_controller.run).start()

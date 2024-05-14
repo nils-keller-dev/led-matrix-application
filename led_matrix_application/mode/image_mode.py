@@ -1,8 +1,8 @@
 from mode.abstract_mode import AbstractMode
 
 class ImageMode(AbstractMode):
-    def start(self):
-        pass
+    def start(self, matrix):
+        self.matrix = matrix
 
     def stop(self):
         pass
@@ -10,5 +10,5 @@ class ImageMode(AbstractMode):
     def update_settings(self, settings):
         self.settings = settings
 
-    def update_display(self, matrix):
-        matrix.Fill(0, 0, 0)
+    def update_display(self):
+        self.matrix.Fill(0, 0, 0)

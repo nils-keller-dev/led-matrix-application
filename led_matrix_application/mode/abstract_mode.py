@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class AbstractMode(ABC):
     @abstractmethod
-    def start(self):
+    def start(self, matrix):
         pass
 
     @abstractmethod
@@ -14,5 +14,5 @@ class AbstractMode(ABC):
         pass
 
     @abstractmethod
-    def update_display(self, matrix):
+    def update_display(self):
         pass

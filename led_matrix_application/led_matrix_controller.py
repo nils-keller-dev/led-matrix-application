@@ -19,20 +19,21 @@ class LEDMatrixController:
             'music': MusicMode(),
             'image': ImageMode()
         }
-        self.current_mode = self.modes['idle']
+        self.current_mode = self.modes['clock']
+        self.current_mode.start(self.matrix)
 
     def switch_mode(self, mode_name):
         if self.current_mode == self.modes[mode_name]:
             return
         self.current_mode.stop()
         self.current_mode = self.modes[mode_name]
-        self.current_mode.start()
+        self.current_mode.start(self.matrix)
 
     def update_settings(self, settings):
         self.current_mode.update_settings(settings)
 
     def update_display(self):
-        self.current_mode.update_display(self.matrix)
+        self.current_mode.update_display()
     
     def update_state(self, state):
         self.matrix.brightness = state['global']['brightness']
