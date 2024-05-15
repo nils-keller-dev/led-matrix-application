@@ -69,6 +69,8 @@ class ClockMode(AbstractMode):
             self.refresh_weather_date()
             self.last_refresh = current_time
 
+        time.sleep(0.1)
+
     def refresh_weather_date(self):
         try:
             data = self.weather_manager.weather_at_place(self.location).weather
