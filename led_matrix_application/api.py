@@ -5,7 +5,7 @@ from starlette.routing import Route
 db = Database()
 
 
-async def get_state(request):
+async def get_state(_):
     state = db.get_state()
     return JSONResponse(state)
 
@@ -16,7 +16,7 @@ async def patch_state(request):
     return JSONResponse(db.get_state())
 
 
-async def get_images(request):
+async def get_images(_):
     return JSONResponse({"images": ["http://example.com/image.png"]})
 
 

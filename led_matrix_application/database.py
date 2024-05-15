@@ -16,12 +16,12 @@ def custom_merge(dict1, dict2):
 
 class Database:
     def get_state(self) -> dict:
-        with open("state.json", "r") as f:
+        with open("state.json", "r", encoding="utf-8") as f:
             state = json.load(f)
         return state
 
     def set_state(self, state: dict):
-        with open("state.json", "w") as f:
+        with open("state.json", "w", encoding="utf-8") as f:
             json.dump(state, f)
 
     def patch_state(self, new_data: dict):

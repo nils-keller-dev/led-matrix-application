@@ -11,6 +11,17 @@ from RGBMatrixEmulator import graphics
 
 
 class ClockMode(AbstractMode):
+    def __init__(self):
+        super().__init__()
+        self.location = None
+        self.timezone = None
+        self.font = None
+        self.weather_manager = None
+        self.offscreen_canvas = None
+        self.last_refresh = None
+        self.icon = None
+        self.temperature = None
+
     def start(self, matrix):
         self.matrix = matrix
         load_dotenv()
@@ -45,9 +56,9 @@ class ClockMode(AbstractMode):
             self.offscreen_canvas, self.font, 36, 16, display_color, time_minutes
         )
 
-        displayDate = date.today().strftime("%d %b")
+        display_date = date.today().strftime("%d %b")
         graphics.DrawText(
-            self.offscreen_canvas, self.font, 5, 58, display_color, displayDate
+            self.offscreen_canvas, self.font, 5, 58, display_color, display_date
         )
         graphics.DrawText(self.offscreen_canvas, self.font, 20, 58, display_color, ".")
 
@@ -71,7 +82,7 @@ class ClockMode(AbstractMode):
                 self.icon = img.copy()
             self.temperature = f"{int(round(data.temperature('celsius')['temp']))}°C"
         except Exception as e:
-            print(f"Error fetching temperature data: {e}")
+            print(f"Error in refresh_weather_date: {e}")
 
     def draw_icon(self, x, y):
         width = self.icon.size[0]
