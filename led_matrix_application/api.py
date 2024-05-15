@@ -37,10 +37,20 @@ async def post_image(request):
     return JSONResponse({"image": image.filename})
 
 
+async def delete_image(request):
+    image = request.path_params["image"]
+    try:
+        os.remove(f"images/{image}")
+        return JSONResponse({"image": image})
+    except FileNotFoundError:
+        return JSONResponse({"error": "Image not found"}, status_code=404)
+
+
 routes = [
     Route("/state", endpoint=get_state, methods=["GET"]),
     Route("/state", endpoint=patch_state, methods=["PATCH"]),
     Route("/images", endpoint=get_images, methods=["GET"]),
     Route("/image/{image}", endpoint=get_image, methods=["GET"]),
     Route("/image", endpoint=post_image, methods=["POST"]),
+    Route("/image/{image}", endpoint=delete_image, methods=["DELETE"]),
 ]
