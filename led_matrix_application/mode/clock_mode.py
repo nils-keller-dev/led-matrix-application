@@ -11,27 +11,22 @@ from RGBMatrixEmulator import graphics
 
 
 class ClockMode(AbstractMode):
-    def __init__(self):
-        super().__init__()
-        self.location = None
-        self.timezone = None
-        self.font = None
-        self.weather_manager = None
+    def __init__(self, matrix):
+        super().__init__(matrix)
+        load_dotenv()
+        self.location = os.getenv("LOCATION")
+        self.timezone = pytz.timezone(os.getenv("TIMEZONE"))
+        owm = pyowm.OWM(os.getenv("OWM_API_KEY"))
+        self.weather_manager = owm.weather_manager()
         self.offscreen_canvas = None
         self.last_refresh = None
         self.icon = None
         self.temperature = None
-
-    def start(self, matrix):
-        self.matrix = matrix
-        load_dotenv()
-        self.location = os.getenv("LOCATION")
-        self.timezone = pytz.timezone(os.getenv("TIMEZONE"))
         self.font = graphics.Font()
         self.font.LoadFont("fonts/9x18.bdf")
-        owm = pyowm.OWM(os.getenv("OWM_API_KEY"))
-        self.weather_manager = owm.weather_manager()
         self.offscreen_canvas = matrix.CreateFrameCanvas()
+
+    def start(self):
         self.refresh_weather_date()
         self.last_refresh = time.time()
 

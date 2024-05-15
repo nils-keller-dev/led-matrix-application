@@ -2,8 +2,8 @@ from mode.abstract_mode import AbstractMode
 
 
 class MusicMode(AbstractMode):
-    def start(self, matrix):
-        self.matrix = matrix
+    def start(self):
+        pass
 
     def update_settings(self, settings):
         self.settings = settings

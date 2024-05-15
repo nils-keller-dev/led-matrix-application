@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 
 
 class AbstractMode(ABC):
-    def __init__(self):
-        self.matrix = None
+    def __init__(self, matrix):
+        self.matrix = matrix
         self.settings = None
 
     @abstractmethod
-    def start(self, matrix):
+    def start(self):
         pass
 
     @abstractmethod

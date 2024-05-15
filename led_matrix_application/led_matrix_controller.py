@@ -14,11 +14,11 @@ class LEDMatrixController:
         options.brightness = 50
         self.matrix = RGBMatrix(options=options)
         self.modes = {
-            "idle": IdleMode(),
-            "clock": ClockMode(),
-            "text": TextMode(),
-            "music": MusicMode(),
-            "image": ImageMode(),
+            "idle": IdleMode(self.matrix),
+            "clock": ClockMode(self.matrix),
+            "text": TextMode(self.matrix),
+            "music": MusicMode(self.matrix),
+            "image": ImageMode(self.matrix),
         }
         self.current_mode = None
         self.mode_started = False
@@ -28,7 +28,7 @@ class LEDMatrixController:
             return
         self.mode_started = False
         self.current_mode = self.modes[mode_name]
-        self.current_mode.start(self.matrix)
+        self.current_mode.start()
         self.mode_started = True
 
     def update_settings(self, settings):

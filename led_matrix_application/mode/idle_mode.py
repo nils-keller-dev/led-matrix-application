@@ -4,10 +4,10 @@ from mode.abstract_mode import AbstractMode
 
 
 class IdleMode(AbstractMode):
-    def start(self, matrix):
-        matrix.Clear()
+    def start(self):
+        self.matrix.Clear()
 
-    def update_settings(self, settings):
+    def update_settings(self, _):
         pass
 
     def update_display(self):
