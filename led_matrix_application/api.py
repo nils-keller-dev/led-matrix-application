@@ -29,9 +29,18 @@ async def get_image(request):
     return FileResponse(f"images/{request.path_params['image']}")
 
 
+async def post_image(request):
+    form = await request.form()
+    image = form.get("image")
+    with open(f"images/{image.filename}", "wb") as buffer:
+        buffer.write(await image.read())
+    return JSONResponse({"image": image.filename})
+
+
 routes = [
     Route("/state", endpoint=get_state, methods=["GET"]),
     Route("/state", endpoint=patch_state, methods=["PATCH"]),
     Route("/images", endpoint=get_images, methods=["GET"]),
     Route("/image/{image}", endpoint=get_image, methods=["GET"]),
+    Route("/image", endpoint=post_image, methods=["POST"]),
 ]
