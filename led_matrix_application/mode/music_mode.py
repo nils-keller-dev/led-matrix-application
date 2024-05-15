@@ -1,5 +1,6 @@
 from mode.abstract_mode import AbstractMode
 
+
 class MusicMode(AbstractMode):
     def start(self, matrix):
         self.matrix = matrix

@@ -1,27 +1,27 @@
-from datetime import date, datetime
 import os
 import time
+from datetime import date, datetime
 
-from PIL import Image
 import pyowm
-from dotenv import load_dotenv
 import pytz
+from dotenv import load_dotenv
+from mode.abstract_mode import AbstractMode
+from PIL import Image
 from RGBMatrixEmulator import graphics
 
-from mode.abstract_mode import AbstractMode
 
 class ClockMode(AbstractMode):
     def start(self, matrix):
         self.matrix = matrix
         load_dotenv()
-        self.location = os.getenv('LOCATION')
-        self.timezone = pytz.timezone(os.getenv('TIMEZONE'))
+        self.location = os.getenv("LOCATION")
+        self.timezone = pytz.timezone(os.getenv("TIMEZONE"))
         self.font = graphics.Font()
         self.font.LoadFont("fonts/9x18.bdf")
-        owm = pyowm.OWM(os.getenv('OWM_API_KEY'))
+        owm = pyowm.OWM(os.getenv("OWM_API_KEY"))
         self.weather_manager = owm.weather_manager()
         self.offscreen_canvas = matrix.CreateFrameCanvas()
-        self.refreshWeatherDate()
+        self.refresh_weather_date()
         self.last_refresh = time.time()
 
     def update_settings(self, settings):
@@ -29,31 +29,41 @@ class ClockMode(AbstractMode):
 
     def update_display(self):
         self.offscreen_canvas.Clear()
-        displayColor = graphics.Color(*self.settings['color'])
-        awareTime = datetime.now(self.timezone)
-        timeHours = awareTime.strftime("%H")
-        timeMinutes = awareTime.strftime("%M")
-        
-        graphics.DrawText(self.offscreen_canvas, self.font, 10, 16, displayColor, timeHours)
-        if (time.mktime(awareTime.timetuple()) % 2 == 0):
-            graphics.DrawText(self.offscreen_canvas, self.font, 27, 15, displayColor, ":")
-        graphics.DrawText(self.offscreen_canvas, self.font, 36, 16, displayColor, timeMinutes)
+        display_color = graphics.Color(*self.settings["color"])
+        aware_time = datetime.now(self.timezone)
+        time_hours = aware_time.strftime("%H")
+        time_minutes = aware_time.strftime("%M")
+
+        graphics.DrawText(
+            self.offscreen_canvas, self.font, 10, 16, display_color, time_hours
+        )
+        if time.mktime(aware_time.timetuple()) % 2 == 0:
+            graphics.DrawText(
+                self.offscreen_canvas, self.font, 27, 15, display_color, ":"
+            )
+        graphics.DrawText(
+            self.offscreen_canvas, self.font, 36, 16, display_color, time_minutes
+        )
 
         displayDate = date.today().strftime("%d %b")
-        graphics.DrawText(self.offscreen_canvas, self.font, 5, 58, displayColor, displayDate)
-        graphics.DrawText(self.offscreen_canvas, self.font, 20, 58, displayColor, ".")
+        graphics.DrawText(
+            self.offscreen_canvas, self.font, 5, 58, display_color, displayDate
+        )
+        graphics.DrawText(self.offscreen_canvas, self.font, 20, 58, display_color, ".")
 
-        self.drawIcon(4, 24)
-        graphics.DrawText(self.offscreen_canvas, self.font, 24, 37, displayColor, self.temperature)
-        
+        self.draw_icon(4, 24)
+        graphics.DrawText(
+            self.offscreen_canvas, self.font, 24, 37, display_color, self.temperature
+        )
+
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
         current_time = time.time()
         if current_time - self.last_refresh >= 60:
-            self.refreshWeatherDate()
+            self.refresh_weather_date()
             self.last_refresh = current_time
 
-    def refreshWeatherDate(self):
+    def refresh_weather_date(self):
         try:
             data = self.weather_manager.weather_at_place(self.location).weather
             path = f"icons/clock/{data.weather_icon_name}.png"
@@ -63,9 +73,11 @@ class ClockMode(AbstractMode):
         except Exception as e:
             print(f"Error fetching temperature data: {e}")
 
-    def drawIcon(self, x, y):
+    def draw_icon(self, x, y):
         width = self.icon.size[0]
-        color = tuple(self.settings['color'])
+        color = tuple(self.settings["color"])
         for index, pixel in enumerate(self.icon.getdata()):
             if pixel[0] == 255:
-                self.offscreen_canvas.SetPixel(x + (index % width), y + index // width, *color)
+                self.offscreen_canvas.SetPixel(
+                    x + (index % width), y + index // width, *color
+                )

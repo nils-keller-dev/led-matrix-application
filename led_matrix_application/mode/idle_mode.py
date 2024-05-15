@@ -2,6 +2,7 @@ import time
 
 from mode.abstract_mode import AbstractMode
 
+
 class IdleMode(AbstractMode):
     def start(self, matrix):
         matrix.Clear()

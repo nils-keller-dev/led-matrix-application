@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 
+
 class AbstractMode(ABC):
+    def __init__(self):
+        self.matrix = None
+        self.settings = None
+
     @abstractmethod
     def start(self, matrix):
         pass

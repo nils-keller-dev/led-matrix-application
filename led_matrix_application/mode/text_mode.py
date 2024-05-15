@@ -1,5 +1,6 @@
 from mode.abstract_mode import AbstractMode
 
+
 class TextMode(AbstractMode):
     def start(self, matrix):
         self.matrix = matrix
