@@ -17,6 +17,7 @@ hypercorn = "^0.16.0"
 pytz = "^2024.1"
 pyowm = "^3.3.0"
 python-dotenv = "^1.0.1"
+pillow = "^10.3.0"
 
 [tool.poetry.group.dev.dependencies]
 rgbmatrixemulator = "^0.11.4"
