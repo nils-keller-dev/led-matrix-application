@@ -43,6 +43,9 @@ class TextMode(AbstractMode):
 
         line_list.append(text_line)
 
+        total_height = len(line_list) * self.font.height
+        offset_top = max((64 - total_height) // 2, 0)
+
         for i, line in enumerate(line_list):
             trimmed_line = line[:-1]
             offset_left = 0
@@ -54,7 +57,7 @@ class TextMode(AbstractMode):
                 self.offscreen_canvas,
                 self.font,
                 offset_left,
-                ((i + 1) * self.font.height) - self.size,
+                offset_top + ((i + 1) * self.font.height) - self.size,
                 graphics.Color(*self.settings["color"]),
                 trimmed_line,
             )
