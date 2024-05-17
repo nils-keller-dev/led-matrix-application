@@ -23,7 +23,7 @@ class ClockMode(AbstractMode):
         self.icon = None
         self.temperature = None
         self.font = graphics.Font()
-        self.font.LoadFont("fonts/9x18.bdf")
+        self.font.LoadFont("fonts/clock.bdf")
         self.offscreen_canvas = matrix.CreateFrameCanvas()
 
     def start(self):
