@@ -80,21 +80,25 @@ class TextMode(AbstractMode):
         for i, (line, offset_left) in enumerate(self.line_list):
             trimmed_line = line[:-1]
 
-            graphics.DrawText(
-                self.offscreen_canvas,
-                self.font,
-                offset_left,
-                offset_top + ((i + 1) * self.font.height),
-                graphics.Color(*self.settings["color"]),
-                trimmed_line,
-            )
+            y1 = offset_top + ((i + 1) * self.font.height)
+            y2 = offset_top + ((i + 2) * self.font.height) + self.total_height
 
-            if self.total_height > 64:
+            if 0 <= y1 < 64 + self.font.height:
                 graphics.DrawText(
                     self.offscreen_canvas,
                     self.font,
                     offset_left,
-                    offset_top + ((i + 2) * self.font.height) + self.total_height,
+                    y1,
+                    graphics.Color(*self.settings["color"]),
+                    trimmed_line,
+                )
+
+            if self.total_height > 64 and 0 <= y2 < 64 + self.font.height:
+                graphics.DrawText(
+                    self.offscreen_canvas,
+                    self.font,
+                    offset_left,
+                    y2,
                     graphics.Color(*self.settings["color"]),
                     trimmed_line,
                 )
