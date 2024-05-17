@@ -1,3 +1,5 @@
+import time
+
 from mode.abstract_mode import AbstractMode
 from RGBMatrixEmulator import graphics
 
@@ -8,6 +10,9 @@ class TextMode(AbstractMode):
         self.font = graphics.Font()
         self.size = None
         self.offscreen_canvas = matrix.CreateFrameCanvas()
+        self.frame = 0
+        self.line_list = []
+        self.total_height = 0
 
     def start(self):
         pass
@@ -17,49 +22,82 @@ class TextMode(AbstractMode):
         if self.size != self.settings["size"]:
             self.font.LoadFont(f"fonts/tamzen/{self.settings['size']}.bdf")
             self.size = self.settings["size"]
+        self.calculate_text()
+
+    def calculate_text(self):
+        one_char_width = self.font.CharacterWidth(0x0020)
+        split_text = self.settings["text"].split(" ")
+
+        self.line_list = []
+        text_line = ""
+        max_length = 64 // one_char_width
+
+        for text in split_text:
+            while len(text) > max_length:
+                if text_line:
+                    self.line_list.append(
+                        (text_line, self.calculate_offset(text_line, one_char_width))
+                    )
+                    text_line = ""
+
+                first_half = text[:max_length]
+                text = text[max_length:]
+                text_line += first_half + " "
+
+            if one_char_width * len(text_line + text) < 64:
+                text_line += text + " "
+            else:
+                self.line_list.append(
+                    (text_line, self.calculate_offset(text_line, one_char_width))
+                )
+                text_line = text + " "
+
+        self.line_list.append(
+            (text_line, self.calculate_offset(text_line, one_char_width))
+        )
+
+        self.total_height = len(self.line_list) * self.font.height
+
+    def calculate_offset(self, line, one_char_width):
+        offset_left = 0
+        if self.settings["align"] == "center":
+            width = one_char_width * (len(line) - 1)
+            offset_left = (64 - width) // 2
+        return offset_left
 
     def update_display(self):
         self.offscreen_canvas.Clear()
 
-        one_char_width = self.font.CharacterWidth(0x0020)
-        split_text = self.settings["text"].split(" ")
+        time.sleep(0.02)
 
-        line_list = []
-        text_line = ""
-        max_length = 64 // one_char_width
+        frame = 0
 
-        for i, text in enumerate(split_text):
-            while len(text) > max_length:
-                first_half = text[:max_length]
-                text = text[max_length:]
-                text_line += first_half + " "
-                line_list.append(text_line)
-                text_line = ""
-            if one_char_width * len(text_line + text) < 64:
-                text_line += text + " "
-            else:
-                line_list.append(text_line)
-                text_line = text + " "
+        if self.total_height > 64:
+            frame = self.frame % (self.total_height + self.font.height)
 
-        line_list.append(text_line)
+        offset_top = max((64 - self.total_height) // 2, 0) - frame - self.size
 
-        total_height = len(line_list) * self.font.height
-        offset_top = max((64 - total_height) // 2, 0)
-
-        for i, line in enumerate(line_list):
+        for i, (line, offset_left) in enumerate(self.line_list):
             trimmed_line = line[:-1]
-            offset_left = 0
-            if self.settings["align"] == "center":
-                width = one_char_width * len(trimmed_line)
-                offset_left = (64 - width) // 2
 
             graphics.DrawText(
                 self.offscreen_canvas,
                 self.font,
                 offset_left,
-                offset_top + ((i + 1) * self.font.height) - self.size,
+                offset_top + ((i + 1) * self.font.height),
                 graphics.Color(*self.settings["color"]),
                 trimmed_line,
             )
 
+            if self.total_height > 64:
+                graphics.DrawText(
+                    self.offscreen_canvas,
+                    self.font,
+                    offset_left,
+                    offset_top + ((i + 2) * self.font.height) + self.total_height,
+                    graphics.Color(*self.settings["color"]),
+                    trimmed_line,
+                )
+
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
+        self.frame += 1
