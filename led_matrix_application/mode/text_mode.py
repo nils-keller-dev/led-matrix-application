@@ -13,6 +13,7 @@ class TextMode(AbstractMode):
         self.frame = 0
         self.line_list = []
         self.total_height = 0
+        self.last_frame_time = time.time()
 
     def start(self):
         pass
@@ -58,6 +59,9 @@ class TextMode(AbstractMode):
 
         self.total_height = len(self.line_list) * self.font.height
 
+        if self.total_height < 64:
+            self.frame = 0
+
     def calculate_offset(self, line, one_char_width):
         offset_left = 0
         if self.settings["align"] == "center":
@@ -68,14 +72,18 @@ class TextMode(AbstractMode):
     def update_display(self):
         self.offscreen_canvas.Clear()
 
-        time.sleep(0.02)
+        current_time = time.time()
+        time_delta = current_time - self.last_frame_time
+        self.last_frame_time = current_time
 
-        frame = 0
+        speed = self.settings["speed"] * self.settings["speed"]
 
         if self.total_height > 64:
-            frame = self.frame % (self.total_height + self.font.height)
+            self.frame = (self.frame + speed * time_delta) % (
+                self.total_height + self.font.height
+            )
 
-        offset_top = max((64 - self.total_height) // 2, 0) - frame - self.size
+        offset_top = max((64 - self.total_height) // 2, 0) - self.frame - self.size
 
         for i, (line, offset_left) in enumerate(self.line_list):
             trimmed_line = line[:-1]
@@ -104,4 +112,3 @@ class TextMode(AbstractMode):
                 )
 
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
-        self.frame += 1
