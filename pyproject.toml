@@ -9,6 +9,7 @@ package-mode = false
 [tool.taskipy.tasks]
 start = "bash scripts/start.sh"
 dev = "bash scripts/dev.sh"
+generate_spotify_cache = "bash scripts/generate_spotify_cache.sh"
 
 [tool.poetry.dependencies]
 python = "^3.12"
