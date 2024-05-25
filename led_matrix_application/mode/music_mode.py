@@ -10,6 +10,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 IMAGE_SIZE = 50, 50
 COLOR_WHITE = graphics.Color(255, 255, 255)
+TEXT_SPEED = 20
 
 
 class MusicMode(AbstractMode):
@@ -38,8 +39,9 @@ class MusicMode(AbstractMode):
         self.song_data = None
         self.text = None
         self.image = None
-        self.text_offset = 0
-        self.text_speed = 1
+        self.last_frame_time = time.time()
+        self.frame = 0
+        self.one_char_width = self.font.CharacterWidth(0x0020)
 
     def start(self):
         self.matrix.Clear()
@@ -55,11 +57,39 @@ class MusicMode(AbstractMode):
 
         self.offscreen_canvas.Clear()
 
-        time.sleep(0.5)
+        current_time = time.time()
+        time_delta = current_time - self.last_frame_time
+        self.last_frame_time = current_time
+
+        text_width = self.one_char_width * len(self.text)
+        space_width = self.one_char_width * 4
+        total_width = text_width + space_width
+
+        if text_width > self.offscreen_canvas.width:
+            self.frame = (self.frame + TEXT_SPEED * time_delta) % total_width
+
+        offset_left = round(
+            max((self.offscreen_canvas.width - text_width) // 2, 0) - self.frame
+        )
 
         graphics.DrawText(
-            self.offscreen_canvas, self.font, 0, 61, COLOR_WHITE, self.text
+            self.offscreen_canvas,
+            self.font,
+            offset_left,
+            61,
+            COLOR_WHITE,
+            self.text,
         )
+
+        if total_width > self.offscreen_canvas.width and text_width > 64:
+            graphics.DrawText(
+                self.offscreen_canvas,
+                self.font,
+                offset_left + total_width,
+                61,
+                COLOR_WHITE,
+                self.text,
+            )
 
         self.offscreen_canvas.SetImage(self.image, 7, 2)
 
