@@ -25,6 +25,8 @@ class LEDMatrixController:
 
     def switch_mode(self, mode_name):
         self.mode_started = False
+        if self.current_mode is not None:
+            self.current_mode.stop()
         self.current_mode = self.modes[mode_name]
         self.current_mode.start()
         self.mode_started = True

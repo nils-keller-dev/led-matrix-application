@@ -11,6 +11,10 @@ class AbstractMode(ABC):
         pass
 
     @abstractmethod
+    def stop(self):
+        pass
+
+    @abstractmethod
     def update_settings(self, settings):
         pass
 

@@ -18,6 +18,9 @@ class ImageMode(AbstractMode):
     def start(self):
         self.matrix.Clear()
 
+    def stop(self):
+        pass
+
     def update_settings(self, settings):
         with self.lock:
             img = Image.open(f"images/{settings['image']}")

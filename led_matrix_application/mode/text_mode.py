@@ -18,6 +18,9 @@ class TextMode(AbstractMode):
     def start(self):
         pass
 
+    def stop(self):
+        pass
+
     def update_settings(self, settings):
         self.settings = settings
         if self.size != self.settings["size"]:

@@ -7,6 +7,9 @@ class IdleMode(AbstractMode):
     def start(self):
         self.matrix.Clear()
 
+    def stop(self):
+        pass
+
     def update_settings(self, _):
         pass
 

@@ -30,6 +30,9 @@ class ClockMode(AbstractMode):
         self.refresh_weather_date()
         self.last_refresh = time.time()
 
+    def stop(self):
+        pass
+
     def update_settings(self, settings):
         self.settings = settings
 

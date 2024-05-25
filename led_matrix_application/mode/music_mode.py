@@ -47,18 +47,20 @@ class MusicMode(AbstractMode):
         self.space_width = self.one_char_width * 4
         self.total_width = 0
         self.offset_left = 0
+        self.song_data_thread = None
+        self.currently_active = False
 
     def start(self):
         self.matrix.Clear()
         self.update_song_data()
+        self.currently_active = True
 
         self.song_data_thread = threading.Thread(target=self.update_song_data_loop)
         self.song_data_thread.start()
 
-    def update_song_data_loop(self):
-        while True:
-            self.update_song_data()
-            time.sleep(1)
+    def stop(self):
+        self.currently_active = False
+        self.song_data_thread.join()
 
     def update_settings(self, _):
         pass
@@ -122,3 +124,8 @@ class MusicMode(AbstractMode):
             self.text_width = self.one_char_width * len(self.text)
             self.total_width = self.text_width + self.space_width
             self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
+
+    def update_song_data_loop(self):
+        while self.currently_active:
+            self.update_song_data()
+            time.sleep(1)
