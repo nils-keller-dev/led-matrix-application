@@ -1,7 +1,9 @@
 import time
 
 from mode.abstract_mode import AbstractMode
-from RGBMatrixEmulator import graphics
+from utils import get_rgb_matrix
+
+graphics = get_rgb_matrix().get("graphics")
 
 
 class TextMode(AbstractMode):

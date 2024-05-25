@@ -6,8 +6,11 @@ from urllib.request import urlopen
 import spotipy
 from mode.abstract_mode import AbstractMode
 from PIL import Image
-from RGBMatrixEmulator import graphics
 from spotipy.oauth2 import SpotifyOAuth
+from utils import get_rgb_matrix
+
+graphics = get_rgb_matrix().get("graphics")
+
 
 IMAGE_SIZE = 50, 50
 COLOR_WHITE = graphics.Color(255, 255, 255)

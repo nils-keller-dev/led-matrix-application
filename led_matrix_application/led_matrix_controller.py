@@ -3,7 +3,10 @@ from mode.idle_mode import IdleMode
 from mode.image_mode import ImageMode
 from mode.music_mode import MusicMode
 from mode.text_mode import TextMode
-from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
+from utils import get_rgb_matrix
+
+RGBMatrix = get_rgb_matrix().get("RGBMatrix")
+RGBMatrixOptions = get_rgb_matrix().get("RGBMatrixOptions")
 
 
 class LEDMatrixController:
