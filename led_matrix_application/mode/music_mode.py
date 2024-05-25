@@ -72,17 +72,6 @@ class MusicMode(AbstractMode):
 
         self.offscreen_canvas.Clear()
 
-        current_time = time.time()
-        time_delta = current_time - self.last_frame_time
-        self.last_frame_time = current_time
-
-        if self.text_width > self.offscreen_canvas.width:
-            self.frame = (self.frame + TEXT_SPEED * time_delta) % self.total_width
-            self.offset_left = round(
-                max((self.offscreen_canvas.width - self.text_width) // 2, 0)
-                - self.frame
-            )
-
         graphics.DrawText(
             self.offscreen_canvas,
             self.font,
@@ -104,6 +93,17 @@ class MusicMode(AbstractMode):
 
         self.offscreen_canvas.SetImage(self.image, 7, 2)
 
+        current_time = time.time()
+        time_delta = current_time - self.last_frame_time
+        self.last_frame_time = current_time
+
+        if self.text_width > self.offscreen_canvas.width:
+            self.frame = (self.frame + TEXT_SPEED * time_delta) % self.total_width
+            self.offset_left = round(
+                max((self.offscreen_canvas.width - self.text_width) // 2, 0)
+                - self.frame
+            )
+
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_song_data(self):
@@ -121,6 +121,7 @@ class MusicMode(AbstractMode):
             image_url = self.song_data["item"]["album"]["images"][2]["url"]
             self.image = Image.open(urlopen(image_url)).resize(IMAGE_SIZE)
 
+            self.frame = 0
             self.text_width = self.one_char_width * len(self.text)
             self.total_width = self.text_width + self.space_width
             self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
