@@ -42,6 +42,10 @@ class MusicMode(AbstractMode):
         self.last_frame_time = time.time()
         self.frame = 0
         self.one_char_width = self.font.CharacterWidth(0x0020)
+        self.text_width = 0
+        self.space_width = self.one_char_width * 4
+        self.total_width = 0
+        self.offset_left = 0
 
     def start(self):
         self.matrix.Clear()
@@ -61,31 +65,27 @@ class MusicMode(AbstractMode):
         time_delta = current_time - self.last_frame_time
         self.last_frame_time = current_time
 
-        text_width = self.one_char_width * len(self.text)
-        space_width = self.one_char_width * 4
-        total_width = text_width + space_width
-
-        if text_width > self.offscreen_canvas.width:
-            self.frame = (self.frame + TEXT_SPEED * time_delta) % total_width
-
-        offset_left = round(
-            max((self.offscreen_canvas.width - text_width) // 2, 0) - self.frame
-        )
+        if self.text_width > self.offscreen_canvas.width:
+            self.frame = (self.frame + TEXT_SPEED * time_delta) % self.total_width
+            self.offset_left = round(
+                max((self.offscreen_canvas.width - self.text_width) // 2, 0)
+                - self.frame
+            )
 
         graphics.DrawText(
             self.offscreen_canvas,
             self.font,
-            offset_left,
+            self.offset_left,
             61,
             COLOR_WHITE,
             self.text,
         )
 
-        if total_width > self.offscreen_canvas.width and text_width > 64:
+        if self.text_width > self.offscreen_canvas.width:
             graphics.DrawText(
                 self.offscreen_canvas,
                 self.font,
-                offset_left + total_width,
+                self.offset_left + self.total_width,
                 61,
                 COLOR_WHITE,
                 self.text,
@@ -105,3 +105,7 @@ class MusicMode(AbstractMode):
             self.text = f"{artist} - {song}"
             image_url = self.song_data["item"]["album"]["images"][2]["url"]
             self.image = Image.open(urlopen(image_url)).resize(IMAGE_SIZE)
+
+            self.text_width = self.one_char_width * len(self.text)
+            self.total_width = self.text_width + self.space_width
+            self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
