@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 from urllib.request import urlopen
 
@@ -51,6 +52,14 @@ class MusicMode(AbstractMode):
         self.matrix.Clear()
         self.update_song_data()
 
+        self.song_data_thread = threading.Thread(target=self.update_song_data_loop)
+        self.song_data_thread.start()
+
+    def update_song_data_loop(self):
+        while True:
+            self.update_song_data()
+            time.sleep(1)
+
     def update_settings(self, _):
         pass
 
@@ -98,7 +107,11 @@ class MusicMode(AbstractMode):
     def update_song_data(self):
         new_song_data = self.spotipy.currently_playing()
 
-        if new_song_data != self.song_data:
+        if (
+            self.song_data is not None
+            and new_song_data["item"]["id"] != self.song_data["item"]["id"]
+        ) or (self.song_data is None and new_song_data is not None):
+            print("New song data")
             self.song_data = new_song_data
             artist = self.song_data["item"]["artists"][0]["name"]
             song = self.song_data["item"]["name"]
