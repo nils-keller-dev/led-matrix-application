@@ -20,7 +20,7 @@ TEXT_SPEED = 20
 class MusicMode(AbstractMode):
     def __init__(self, matrix):
         super().__init__(matrix)
-        self.logo = Image.open("icons/spotify.png")
+        self.logo = Image.open("icons/spotify.png").convert("RGB")
         self.font = graphics.Font()
         self.font.LoadFont("fonts/tamzen/1.bdf")
 
@@ -69,7 +69,7 @@ class MusicMode(AbstractMode):
         pass
 
     def update_display(self):
-        if self.song_data is None:
+        if self.song_data is None or self.image is None:
             self.matrix.SetImage(self.logo, 20, 20, False)
             return
 
@@ -94,7 +94,7 @@ class MusicMode(AbstractMode):
                 self.text,
             )
 
-        self.offscreen_canvas.SetImage(self.image, 7, 2)
+        self.offscreen_canvas.SetImage(self.image, 7, 2, False)
 
         current_time = time.time()
         time_delta = current_time - self.last_frame_time
@@ -114,6 +114,7 @@ class MusicMode(AbstractMode):
 
         if (
             self.song_data is not None
+            and new_song_data is not None
             and new_song_data["item"]["id"] != self.song_data["item"]["id"]
         ) or (self.song_data is None and new_song_data is not None):
             print("New song data")
