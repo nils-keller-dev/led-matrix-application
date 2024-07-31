@@ -75,6 +75,9 @@ class TextMode(AbstractMode):
         return offset_left
 
     def update_display(self):
+        if self.size is None:
+            return
+
         self.offscreen_canvas.Clear()
 
         current_time = time.time()
