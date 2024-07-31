@@ -122,13 +122,16 @@ class MusicMode(AbstractMode):
             artist = self.song_data["item"]["artists"][0]["name"]
             song = self.song_data["item"]["name"]
             self.text = f"{artist} - {song}"
-            image_url = self.song_data["item"]["album"]["images"][2]["url"]
-            self.image = Image.open(urlopen(image_url)).resize(IMAGE_SIZE)
 
             self.frame = 0
             self.text_width = self.one_char_width * len(self.text)
             self.total_width = self.text_width + self.space_width
             self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
+
+            image_url = self.song_data["item"]["album"]["images"][2]["url"]
+            self.image = (
+                Image.open(urlopen(image_url)).resize(IMAGE_SIZE).convert("RGB")
+            )
 
     def update_song_data_loop(self):
         while self.currently_active:
