@@ -13,6 +13,7 @@ graphics = get_rgb_matrix().get("graphics")
 
 
 IMAGE_SIZE = 50, 50
+IMAGE_SIZE_FULLSCREEN = 64, 64
 COLOR_WHITE = graphics.Color(255, 255, 255)
 TEXT_SPEED = 20
 
@@ -43,6 +44,7 @@ class MusicMode(AbstractMode):
         self.song_data = None
         self.text = None
         self.image = None
+        self.image_fullscreen = None
         self.last_frame_time = time.time()
         self.frame = 0
         self.one_char_width = self.font.CharacterWidth(0x0020)
@@ -52,6 +54,7 @@ class MusicMode(AbstractMode):
         self.offset_left = 0
         self.song_data_thread = None
         self.currently_active = False
+        self.lock = threading.Lock()
 
     def start(self):
         self.matrix.Clear()
@@ -65,49 +68,72 @@ class MusicMode(AbstractMode):
         self.currently_active = False
         self.song_data_thread.join()
 
-    def update_settings(self, _):
-        pass
+    def update_settings(self, settings):
+        with self.lock:
+            if self.song_data is None:
+                self.settings = settings
+                return
+
+            image_url = self.song_data["item"]["album"]["images"][2]["url"]
+            if settings["fullscreen"]:
+                self.settings = settings
+                if self.image_fullscreen is None:
+                    self.image_fullscreen = self.process_image(
+                        image_url, IMAGE_SIZE_FULLSCREEN
+                    )
+                self.display_fullscreen_image()
+            else:
+                if self.image is None:
+                    self.image = self.process_image(image_url, IMAGE_SIZE)
+                self.last_frame_time = time.time()
+                self.settings = settings
 
     def update_display(self):
-        if self.song_data is None or self.image is None:
-            self.matrix.SetImage(self.logo, 20, 20, False)
-            return
+        with self.lock:
+            if self.song_data is None or (
+                self.image is None and self.image_fullscreen is None
+            ):
+                self.matrix.SetImage(self.logo, 20, 20, False)
+                return
 
-        self.offscreen_canvas.Clear()
+            if self.settings["fullscreen"]:
+                return
 
-        graphics.DrawText(
-            self.offscreen_canvas,
-            self.font,
-            self.offset_left,
-            61,
-            COLOR_WHITE,
-            self.text,
-        )
+            self.offscreen_canvas.Clear()
 
-        if self.text_width > self.offscreen_canvas.width:
             graphics.DrawText(
                 self.offscreen_canvas,
                 self.font,
-                self.offset_left + self.total_width,
+                self.offset_left,
                 61,
                 COLOR_WHITE,
                 self.text,
             )
 
-        self.offscreen_canvas.SetImage(self.image, 7, 2, False)
+            if self.text_width > self.offscreen_canvas.width:
+                graphics.DrawText(
+                    self.offscreen_canvas,
+                    self.font,
+                    self.offset_left + self.total_width,
+                    61,
+                    COLOR_WHITE,
+                    self.text,
+                )
 
-        current_time = time.time()
-        time_delta = current_time - self.last_frame_time
-        self.last_frame_time = current_time
+            self.offscreen_canvas.SetImage(self.image, 7, 2, False)
 
-        if self.text_width > self.offscreen_canvas.width:
-            self.frame = (self.frame + TEXT_SPEED * time_delta) % self.total_width
-            self.offset_left = round(
-                max((self.offscreen_canvas.width - self.text_width) // 2, 0)
-                - self.frame
-            )
+            current_time = time.time()
+            time_delta = current_time - self.last_frame_time
+            self.last_frame_time = current_time
 
-        self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
+            if self.text_width > self.offscreen_canvas.width:
+                self.frame = (self.frame + TEXT_SPEED * time_delta) % self.total_width
+                self.offset_left = round(
+                    max((self.offscreen_canvas.width - self.text_width) // 2, 0)
+                    - self.frame
+                )
+
+            self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_song_data(self):
         new_song_data = self.spotipy.currently_playing()
@@ -129,9 +155,22 @@ class MusicMode(AbstractMode):
             self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
 
             image_url = self.song_data["item"]["album"]["images"][2]["url"]
-            self.image = (
-                Image.open(urlopen(image_url)).resize(IMAGE_SIZE).convert("RGB")
-            )
+            if self.settings and self.settings["fullscreen"]:
+                self.image_fullscreen = self.process_image(
+                    image_url, IMAGE_SIZE_FULLSCREEN
+                )
+                self.image = None
+                self.display_fullscreen_image()
+            else:
+                self.image = self.process_image(image_url, IMAGE_SIZE)
+                self.image_fullscreen = None
+
+    def process_image(self, url, size):
+        return Image.open(urlopen(url)).resize(size).convert("RGB")
+
+    def display_fullscreen_image(self):
+        self.offscreen_canvas.SetImage(self.image_fullscreen, 0, 0, False)
+        self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_song_data_loop(self):
         while self.currently_active:
