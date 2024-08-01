@@ -53,19 +53,19 @@ class MusicMode(AbstractMode):
         self.total_width = 0
         self.offset_left = 0
         self.song_data_thread = None
-        self.currently_active = False
+        self.is_mode_active = False
         self.lock = threading.Lock()
 
     def start(self):
         self.matrix.Clear()
         self.update_song_data()
-        self.currently_active = True
+        self.is_mode_active = True
 
         self.song_data_thread = threading.Thread(target=self.update_song_data_loop)
         self.song_data_thread.start()
 
     def stop(self):
-        self.currently_active = False
+        self.is_mode_active = False
         self.song_data_thread.join()
 
     def update_settings(self, settings):
@@ -142,12 +142,10 @@ class MusicMode(AbstractMode):
             print(f"Error in update_song_data: {e}")
             return
 
-        if (
-            self.song_data is not None
-            and new_song_data is not None
-            and new_song_data["item"]["id"] != self.song_data["item"]["id"]
-        ) or (self.song_data is None and new_song_data is not None):
-            print("New song data")
+        if new_song_data is not None and (
+            self.song_data is None
+            or new_song_data["item"]["id"] != self.song_data["item"]["id"]
+        ):
             self.song_data = new_song_data
             artist = self.song_data["item"]["artists"][0]["name"]
             song = self.song_data["item"]["name"]
@@ -177,6 +175,6 @@ class MusicMode(AbstractMode):
         self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_song_data_loop(self):
-        while self.currently_active:
+        while self.is_mode_active:
             self.update_song_data()
             time.sleep(1)
