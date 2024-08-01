@@ -136,7 +136,11 @@ class MusicMode(AbstractMode):
             self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_song_data(self):
-        new_song_data = self.spotipy.currently_playing()
+        try:
+            new_song_data = self.spotipy.currently_playing()
+        except Exception as e:
+            print(f"Error in update_song_data: {e}")
+            return
 
         if (
             self.song_data is not None
