@@ -29,7 +29,7 @@ class ClockMode(AbstractMode):
         self.offscreen_canvas = matrix.CreateFrameCanvas()
 
     def start(self):
-        self.refresh_weather_date()
+        self.refresh_weather_data()
         self.last_refresh = time.time()
 
     def stop(self):
@@ -71,12 +71,12 @@ class ClockMode(AbstractMode):
 
         current_time = time.time()
         if current_time - self.last_refresh >= 60:
-            self.refresh_weather_date()
+            self.refresh_weather_data()
             self.last_refresh = current_time
 
         time.sleep(0.1)
 
-    def refresh_weather_date(self):
+    def refresh_weather_data(self):
         try:
             data = self.weather_manager.weather_at_place(self.location).weather
             path = f"icons/clock/{data.weather_icon_name}.png"
@@ -84,7 +84,7 @@ class ClockMode(AbstractMode):
                 self.icon = img.copy()
             self.temperature = f"{int(round(data.temperature('celsius')['temp']))}°C"
         except Exception as e:
-            print(f"Error in refresh_weather_date: {e}")
+            print(f"Error in refresh_weather_data: {e}")
 
     def draw_icon(self, x, y):
         width = self.icon.size[0]
