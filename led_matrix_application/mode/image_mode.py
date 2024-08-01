@@ -23,28 +23,33 @@ class ImageMode(AbstractMode):
 
     def update_settings(self, settings):
         with self.lock:
+            self.offscreen_canvas.Clear()
+            self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
+
             img = Image.open(f"images/{settings['image']}")
             self.current_frame = 0
+            self.frame_durations = []
             if img.format == "GIF":
                 self.image_frames = []
-                self.frame_durations = []
                 for frame in ImageSequence.Iterator(img):
                     self.image_frames.append(self.process_frame(frame.copy()))
                     self.frame_durations.append(frame.info.get("duration", 100))
             else:
                 self.image_frames = [self.process_frame(img)]
-                self.frame_durations = [100]
 
             first_frame = self.image_frames[0]
             self.offset = (64 - first_frame.size[0]) // 2, (
                 64 - first_frame.size[1]
             ) // 2
-            self.matrix.Clear()
-            self.matrix.SetImage(first_frame, self.offset[0], self.offset[1], False)
+
+            self.offscreen_canvas.SetImage(
+                first_frame, self.offset[0], self.offset[1], False
+            )
+            self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def update_display(self):
         with self.lock:
-            if not self.image_frames:
+            if not self.image_frames or not self.frame_durations:
                 return
             start_time = time.time()
             img = self.image_frames[self.current_frame]
