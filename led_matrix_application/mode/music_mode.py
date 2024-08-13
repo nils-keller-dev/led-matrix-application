@@ -74,7 +74,10 @@ class MusicMode(AbstractMode):
                 self.settings = settings
                 return
 
-            image_url = self.song_data["item"]["album"]["images"][2]["url"]
+            if self.song_data["currently_playing_type"] == "track":
+                image_url = self.song_data["item"]["album"]["images"][2]["url"]
+            else:
+                image_url = self.song_data["item"]["images"][2]["url"]
             if settings["fullscreen"]:
                 self.settings = settings
                 if self.image_fullscreen is None:
@@ -137,7 +140,7 @@ class MusicMode(AbstractMode):
 
     def update_song_data(self):
         try:
-            new_song_data = self.spotipy.currently_playing()
+            new_song_data = self.spotipy.currently_playing(additional_types=["episode"])
         except Exception as e:
             print(f"Error in update_song_data: {e}")
             return
@@ -147,8 +150,15 @@ class MusicMode(AbstractMode):
             or new_song_data["item"]["id"] != self.song_data["item"]["id"]
         ):
             self.song_data = new_song_data
-            artist = self.song_data["item"]["artists"][0]["name"]
-            song = self.song_data["item"]["name"]
+            if self.song_data["currently_playing_type"] == "track":
+                artist = self.song_data["item"]["artists"][0]["name"]
+                song = self.song_data["item"]["name"]
+                image_url = self.song_data["item"]["album"]["images"][2]["url"]
+            else:
+                artist = self.song_data["item"]["show"]["publisher"]
+                song = f"{self.song_data['item']['show']['name']} - {self.song_data['item']['name']}"
+                image_url = self.song_data["item"]["images"][2]["url"]
+
             self.text = f"{artist} - {song}"
 
             self.frame = 0
@@ -156,7 +166,6 @@ class MusicMode(AbstractMode):
             self.total_width = self.text_width + self.space_width
             self.offset_left = round(max((self.matrix.width - self.text_width) // 2, 0))
 
-            image_url = self.song_data["item"]["album"]["images"][2]["url"]
             if self.settings and self.settings["fullscreen"]:
                 self.image_fullscreen = self.process_image(
                     image_url, IMAGE_SIZE_FULLSCREEN
@@ -168,7 +177,10 @@ class MusicMode(AbstractMode):
                 self.image_fullscreen = None
 
     def process_image(self, url, size):
-        return Image.open(urlopen(url)).resize(size).convert("RGB")
+        try:
+            return Image.open(urlopen(url)).resize(size).convert("RGB")
+        except Exception as e:
+            print(f"Error in process_image: {e}")
 
     def display_fullscreen_image(self):
         self.offscreen_canvas.SetImage(self.image_fullscreen, 0, 0, False)
