@@ -41,9 +41,20 @@ class ClockMode(AbstractMode):
     def update_display(self):
         self.offscreen_canvas.Clear()
         display_color = graphics.Color(*self.settings["color"])
+        background_color = graphics.Color(*self.settings["backgroundColor"])
         aware_time = datetime.now(self.timezone)
         time_hours = aware_time.strftime("%H")
         time_minutes = aware_time.strftime("%M")
+
+        for y in range(self.offscreen_canvas.height):
+            graphics.DrawLine(
+                self.offscreen_canvas,
+                0,
+                y,
+                self.offscreen_canvas.width,
+                y,
+                background_color,
+            )
 
         graphics.DrawText(
             self.offscreen_canvas, self.font, 10, 16, display_color, time_hours
