@@ -57,7 +57,7 @@ class ClockMode(AbstractMode):
                 y,
                 self.offscreen_canvas.width,
                 y,
-                calculated_background_color,
+                graphics.Color(*calculated_background_color),
             )
 
         graphics.DrawText(
