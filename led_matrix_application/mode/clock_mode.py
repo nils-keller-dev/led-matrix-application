@@ -6,7 +6,7 @@ import pyowm
 import pytz
 from dotenv import load_dotenv
 from mode.abstract_mode import AbstractMode
-from PIL import Image
+from PIL import Image, ImageEnhance
 from utils import get_rgb_matrix
 
 graphics = get_rgb_matrix().get("graphics")
@@ -41,10 +41,14 @@ class ClockMode(AbstractMode):
     def update_display(self):
         self.offscreen_canvas.Clear()
         display_color = graphics.Color(*self.settings["color"])
-        background_color = graphics.Color(*self.settings["backgroundColor"])
         aware_time = datetime.now(self.timezone)
         time_hours = aware_time.strftime("%H")
         time_minutes = aware_time.strftime("%M")
+
+        calculated_background_color = adjust_brightness(
+            tuple(self.settings["backgroundColor"]),
+            self.settings["backgroundBrightness"],
+        )
 
         for y in range(self.offscreen_canvas.height):
             graphics.DrawLine(
@@ -53,7 +57,7 @@ class ClockMode(AbstractMode):
                 y,
                 self.offscreen_canvas.width,
                 y,
-                background_color,
+                calculated_background_color,
             )
 
         graphics.DrawText(
@@ -105,3 +109,12 @@ class ClockMode(AbstractMode):
                 self.offscreen_canvas.SetPixel(
                     x + (index % width), y + index // width, *color
                 )
+
+
+def adjust_brightness(rgb, brightness):
+    img = Image.new("RGB", (1, 1), rgb)
+
+    enhancer = ImageEnhance.Brightness(img)
+    img = enhancer.enhance(brightness / 100.0)
+
+    return img.getpixel((0, 0))
