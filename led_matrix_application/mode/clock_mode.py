@@ -1,9 +1,9 @@
 import os
 import time
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 import pyowm
-import pytz
 from dotenv import load_dotenv
 from mode.abstract_mode import AbstractMode
 from PIL import Image, ImageEnhance
@@ -17,7 +17,7 @@ class ClockMode(AbstractMode):
         super().__init__(matrix)
         load_dotenv()
         self.location = os.getenv("LOCATION")
-        self.timezone = pytz.timezone(os.getenv("TIMEZONE"))
+        self.timezone = ZoneInfo(os.getenv("TIMEZONE"))
         owm = pyowm.OWM(os.getenv("OWM_API_KEY"))
         self.weather_manager = owm.weather_manager()
         self.offscreen_canvas = None
