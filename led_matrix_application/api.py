@@ -21,7 +21,8 @@ async def patch_state(request):
 async def get_images(_):
     stripped_list = []
     for file in os.listdir("images"):
-        stripped_list.append(file)
+        if not file.startswith("."):
+            stripped_list.append(file)
     return JSONResponse({"images": stripped_list})
 
 
