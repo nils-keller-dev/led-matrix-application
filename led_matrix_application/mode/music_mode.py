@@ -57,7 +57,8 @@ class MusicMode(AbstractMode):
         self.lock = threading.Lock()
 
     def start(self):
-        self.matrix.Clear()
+        self.offscreen_canvas.Clear()
+        self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
         self.update_song_data()
         self.is_mode_active = True
 
@@ -96,7 +97,8 @@ class MusicMode(AbstractMode):
             if self.song_data is None or (
                 self.image is None and self.image_fullscreen is None
             ):
-                self.matrix.SetImage(self.logo, 20, 20, False)
+                self.offscreen_canvas.SetImage(self.logo, 20, 20, False)
+                self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
                 return
 
             if self.settings["fullscreen"]:

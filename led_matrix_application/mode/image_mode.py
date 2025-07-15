@@ -16,15 +16,16 @@ class ImageMode(AbstractMode):
         self.lock = threading.Lock()
 
     def start(self):
-        self.matrix.Clear()
+        self.offscreen_canvas.Clear()
+        self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
     def stop(self):
         pass
 
     def update_settings(self, settings):
         with self.lock:
-            self.matrix.Clear()
             self.offscreen_canvas.Clear()
+            self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
 
             img = Image.open(f"images/{settings['image']}")
             self.current_frame = 0
