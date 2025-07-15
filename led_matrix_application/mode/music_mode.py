@@ -97,6 +97,7 @@ class MusicMode(AbstractMode):
             if self.song_data is None or (
                 self.image is None and self.image_fullscreen is None
             ):
+                self.offscreen_canvas.Clear()
                 self.offscreen_canvas.SetImage(self.logo, 20, 20, False)
                 self.offscreen_canvas = self.matrix.SwapOnVSync(self.offscreen_canvas)
                 return
