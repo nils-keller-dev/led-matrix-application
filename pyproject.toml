@@ -12,7 +12,7 @@ dev = "bash scripts/dev.sh"
 generate_spotify_cache = "bash scripts/generate_spotify_cache.sh"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 starlette = "^0.47.0"
 hypercorn = "^0.17.0"
 pyowm = "^3.3.0"
