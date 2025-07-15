@@ -23,14 +23,13 @@ class ClockMode(AbstractMode):
         self.offscreen_canvas = None
         self.last_refresh = None
         self.icon = None
-        self.temperature = None
+        self.temperature = ""
         self.font = graphics.Font()
         self.font.LoadFont("fonts/clock.bdf")
         self.offscreen_canvas = matrix.CreateFrameCanvas()
 
     def start(self):
-        self.refresh_weather_data()
-        self.last_refresh = time.time()
+        self.last_refresh = 0
 
     def stop(self):
         pass
@@ -102,6 +101,8 @@ class ClockMode(AbstractMode):
             print(f"Error in refresh_weather_data: {e}")
 
     def draw_icon(self, x, y):
+        if self.icon is None:
+            return
         width = self.icon.size[0]
         color = tuple(self.settings["color"])
         for index, pixel in enumerate(self.icon.getdata()):
