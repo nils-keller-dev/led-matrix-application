@@ -1,8 +1,6 @@
 import json
 import os
 
-from controller import led_matrix_controller
-
 
 def custom_merge(dict1, dict2):
     for key, value in dict2.items():
@@ -50,5 +48,4 @@ class Database:
     def patch_state(self, new_data: dict):
         state = self.get_state()
         state = custom_merge(state, new_data)
-        led_matrix_controller.update_state(state)
         self.set_state(state)
