@@ -10,9 +10,8 @@ from state_manager import StateManager
 
 WEBSERVER_DIR = "webapp"
 
-db = Database()
 led_matrix_controller = LEDMatrixController()
-state_manager = StateManager(db, led_matrix_controller)
+state_manager = StateManager(Database(), led_matrix_controller)
 
 routes = [
     Mount("/api", routes=create_routes(state_manager)),

@@ -1,6 +1,3 @@
-from database import Database
-
-
 class StateManager:
     def __init__(self, database, led_controller):
         self.db = database
