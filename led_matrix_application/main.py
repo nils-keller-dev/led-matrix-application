@@ -20,4 +20,4 @@ routes = [
 
 app = Starlette(routes=routes)
 
-threading.Thread(target=led_matrix_controller.run).start()
+threading.Thread(target=led_matrix_controller.run, daemon=True).start()
