@@ -43,7 +43,7 @@ class LEDMatrixController:
         self.current_mode.update_display()
 
     def update_state(self, state):
-        self.matrix.brightness = state["global"]["brightness"]
+        self.matrix.brightness = state["global"]["brightness"]["current"]
         mode_name = state["global"]["mode"]
         if self.current_mode != self.modes[mode_name]:
             self.switch_mode(mode_name)

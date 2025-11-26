@@ -17,7 +17,15 @@ class Database:
     def __init__(self):
         if not os.path.exists("state.json"):
             default_state = {
-                "global": {"mode": "idle", "brightness": 50},
+                "global": {
+                    "mode": "idle",
+                    "brightness": {
+                        "current": 80,
+                        "day": 80,
+                        "night": 20,
+                        "adaptive": True,
+                    },
+                },
                 "text": {
                     "text": "",
                     "align": "left",
