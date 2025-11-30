@@ -36,10 +36,9 @@ class BrightnessScheduler:
             return
 
         target_brightness = brightness_config["day" if is_daytime else "night"]
+        new_state = {"global": {"brightness": {"current": target_brightness}}}
 
-        self.state_manager.internal_brightness_update(
-            {"global": {"brightness": {"current": target_brightness}}}
-        )
+        self.state_manager.update_state(new_state)
         print(f"Set brightness to {target_brightness}")
 
     def _on_sun_event(self, is_sunrise: bool):
