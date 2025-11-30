@@ -1,6 +1,7 @@
 import threading
 
 from api import create_routes
+from brightness_scheduler import BrightnessScheduler
 from database import Database
 from led_matrix_controller import LEDMatrixController
 from starlette.applications import Starlette
@@ -12,6 +13,7 @@ WEBSERVER_DIR = "webapp"
 
 led_matrix_controller = LEDMatrixController()
 state_manager = StateManager(Database(), led_matrix_controller)
+brightness_scheduler = BrightnessScheduler(state_manager)
 
 routes = [
     Mount("/api", routes=create_routes(state_manager)),
@@ -21,3 +23,4 @@ routes = [
 app = Starlette(routes=routes)
 
 threading.Thread(target=led_matrix_controller.run, daemon=True).start()
+threading.Thread(target=brightness_scheduler.run, daemon=True).start()
