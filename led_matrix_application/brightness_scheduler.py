@@ -49,6 +49,10 @@ class BrightnessScheduler:
         state = self.state_manager.get_state()
         brightness_config = state["global"]["brightness"]
 
+        if not brightness_config["adaptive"]:
+            print("Adaptive brightness is disabled; skipping update.")
+            return
+
         target_brightness = brightness_config["day" if is_daytime else "night"]
 
         self.state_manager._internal_brightness_update(
@@ -65,9 +69,9 @@ class BrightnessScheduler:
         delay = self._seconds_until(
             self._sunrise_time if is_sunrise else self._sunset_time
         )
-        print(
-            f"Scheduling next {'sunrise' if is_sunrise else 'sunset'} event in {delay/3600:.2f} hours"
-        )
+
+        next_event = "sunrise" if is_sunrise else "sunset"
+        print(f"Scheduling next {next_event} event in {delay/3600:.2f} hours")
         timer = threading.Timer(delay, self._on_sun_event, args=(is_sunrise,))
         timer.daemon = True
         timer.start()
