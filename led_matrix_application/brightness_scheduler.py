@@ -21,7 +21,7 @@ class BrightnessScheduler:
 
         return (target - now).total_seconds()
 
-    def _update_brightness(self, is_daytime: bool):
+    def _update_brightness(self, is_daytime: bool, is_initial_update: bool = False):
         state = self.state_manager.get_state()
         brightness_config = state["global"]["brightness"]
 
@@ -29,7 +29,11 @@ class BrightnessScheduler:
             print("Adaptive brightness is disabled; skipping update.")
             return
 
-        if is_daytime and brightness_config["current"] != brightness_config["night"]:
+        if (
+            not is_initial_update
+            and is_daytime
+            and brightness_config["current"] != brightness_config["night"]
+        ):
             print(
                 "It is sunrise but current was manually changed during the night; skipping update."
             )
@@ -62,7 +66,7 @@ class BrightnessScheduler:
     def run(self):
         is_daytime = self.solar_service.is_daytime()
         print(f"Initial time: {'Day' if is_daytime else 'Night'}")
-        self._update_brightness(is_daytime)
+        self._update_brightness(is_daytime, True)
 
         self._schedule_sun_event(is_sunrise=True)
         self._schedule_sun_event(is_sunrise=False)
