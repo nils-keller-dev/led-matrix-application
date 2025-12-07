@@ -1,8 +1,6 @@
 import json
 import os
 
-from controller import led_matrix_controller
-
 
 def custom_merge(dict1, dict2):
     for key, value in dict2.items():
@@ -19,7 +17,15 @@ class Database:
     def __init__(self):
         if not os.path.exists("state.json"):
             default_state = {
-                "global": {"mode": "idle", "brightness": 50},
+                "global": {
+                    "mode": "idle",
+                    "brightness": {
+                        "current": 80,
+                        "day": 80,
+                        "night": 20,
+                        "adaptive": True,
+                    },
+                },
                 "text": {
                     "text": "",
                     "align": "left",
@@ -50,5 +56,4 @@ class Database:
     def patch_state(self, new_data: dict):
         state = self.get_state()
         state = custom_merge(state, new_data)
-        led_matrix_controller.update_state(state)
         self.set_state(state)
