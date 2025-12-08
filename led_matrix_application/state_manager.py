@@ -21,19 +21,26 @@ class StateManager:
         with self._lock:
             self.database.patch_state(new_data)
 
-            current_state = self.database.get_state()["global"]["brightness"]
-            new_state = new_data["global"]["brightness"]
+            brightness_data = new_data.get("global", {}).get("brightness", {})
+            if brightness_data:
+                current_state = self.database.get_state()["global"]["brightness"]
 
-            is_daytime = self.solar_service.is_daytime()
+                is_daytime = self.solar_service.is_daytime()
 
-            if "night" in new_state and not is_daytime:
-                self._database_patch_brightness_key("current", new_state["night"])
-            elif "day" in new_state and is_daytime:
-                self._database_patch_brightness_key("current", new_state["day"])
-            elif "adaptive" in new_state and new_state["adaptive"] and is_daytime:
-                self._database_patch_brightness_key("day", current_state["current"])
-            elif "adaptive" in new_state and new_state["adaptive"] and not is_daytime:
-                self._database_patch_brightness_key("current", current_state["night"])
+                if "night" in brightness_data and not is_daytime:
+                    self._database_patch_brightness_key(
+                        "current", brightness_data["night"]
+                    )
+                elif "day" in brightness_data and is_daytime:
+                    self._database_patch_brightness_key(
+                        "current", brightness_data["day"]
+                    )
+                elif brightness_data.get("adaptive") and is_daytime:
+                    self._database_patch_brightness_key("day", current_state["current"])
+                elif brightness_data.get("adaptive") and not is_daytime:
+                    self._database_patch_brightness_key(
+                        "current", current_state["night"]
+                    )
 
             self.led_controller.update_state(self.database.get_state())
 
