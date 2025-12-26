@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from datetime import date, datetime
@@ -9,6 +10,7 @@ from mode.abstract_mode import AbstractMode
 from PIL import Image, ImageEnhance
 from utils import get_rgb_matrix
 
+logger = logging.getLogger(__name__)
 graphics = get_rgb_matrix().get("graphics")
 
 
@@ -98,7 +100,7 @@ class ClockMode(AbstractMode):
                 self.icon = img.copy()
             self.temperature = f"{int(round(data.temperature('celsius')['temp']))}°C"
         except Exception as e:
-            print(f"Error in refresh_weather_data: {e}")
+            logger.error("Error in refresh_weather_data: %s", e, exc_info=True)
 
     def draw_icon(self, x, y):
         if self.icon is None:

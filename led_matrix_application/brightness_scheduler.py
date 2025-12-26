@@ -1,3 +1,4 @@
+import logging
 import threading
 from datetime import datetime
 from datetime import time as time_type
@@ -5,6 +6,8 @@ from datetime import timedelta
 
 from solar_time_service import SolarTimeService
 from state_manager import StateManager
+
+logger = logging.getLogger(__name__)
 
 
 class BrightnessScheduler:
@@ -26,7 +29,7 @@ class BrightnessScheduler:
         brightness_config = state["global"]["brightness"]
 
         if not brightness_config["adaptive"]:
-            print("Adaptive brightness is disabled; skipping update.")
+            logger.info("Adaptive brightness is disabled; skipping update.")
             return
 
         if (
@@ -34,7 +37,7 @@ class BrightnessScheduler:
             and is_daytime
             and brightness_config["current"] != brightness_config["night"]
         ):
-            print(
+            logger.info(
                 "It is sunrise but current was manually changed during the night; skipping update."
             )
             return
@@ -43,10 +46,10 @@ class BrightnessScheduler:
         new_state = {"global": {"brightness": {"current": target_brightness}}}
 
         self.state_manager.update_state(new_state)
-        print(f"Set brightness to {target_brightness}")
+        logger.info("Set brightness to %s", target_brightness)
 
     def _on_sun_event(self, is_sunrise: bool):
-        print(f"{'Sunrise' if is_sunrise else 'Sunset'} event triggered")
+        logger.info("%s event triggered", "Sunrise" if is_sunrise else "Sunset")
         self._update_brightness(is_sunrise)
         self._schedule_sun_event(is_sunrise)
 
@@ -58,14 +61,14 @@ class BrightnessScheduler:
         )
 
         next_event = "sunrise" if is_sunrise else "sunset"
-        print(f"Scheduling next {next_event} event in {delay/3600:.2f} hours")
+        logger.info("Scheduling next %s event in %.2f hours", next_event, delay / 3600)
         timer = threading.Timer(delay, self._on_sun_event, args=(is_sunrise,))
         timer.daemon = True
         timer.start()
 
     def run(self):
         is_daytime = self.solar_service.is_daytime()
-        print(f"Initial time: {'Day' if is_daytime else 'Night'}")
+        logger.info("Initial time: %s", "Day" if is_daytime else "Night")
         self._update_brightness(is_daytime, True)
 
         self._schedule_sun_event(is_sunrise=True)

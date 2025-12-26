@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 import time
@@ -9,6 +10,7 @@ from PIL import Image
 from spotipy.oauth2 import SpotifyOAuth
 from utils import get_rgb_matrix
 
+logger = logging.getLogger(__name__)
 graphics = get_rgb_matrix().get("graphics")
 
 
@@ -145,7 +147,7 @@ class MusicMode(AbstractMode):
         try:
             new_song_data = self.spotipy.currently_playing(additional_types=["episode"])
         except Exception as e:
-            print(f"Error in update_song_data: {e}")
+            logger.error("Error in update_song_data: %s", e, exc_info=True)
             return
 
         if new_song_data is not None and (
@@ -183,7 +185,7 @@ class MusicMode(AbstractMode):
         try:
             return Image.open(urlopen(url)).resize(size).convert("RGB")
         except Exception as e:
-            print(f"Error in process_image: {e}")
+            logger.error("Error in process_image: %s", e, exc_info=True)
 
     def display_fullscreen_image(self):
         self.offscreen_canvas.SetImage(self.image_fullscreen, 0, 0, False)

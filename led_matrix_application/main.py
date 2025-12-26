@@ -1,3 +1,4 @@
+import logging
 import threading
 
 from api import create_routes
@@ -8,6 +9,14 @@ from starlette.applications import Starlette
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
 from state_manager import StateManager
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    datefmt="%d.%m.%Y %H:%M:%S",
+)
+
+logging.getLogger("RGBME").propagate = False
 
 WEBSERVER_DIR = "webapp"
 

@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 import time
@@ -6,6 +7,8 @@ from datetime import time as time_type
 from typing import Optional
 
 import pyowm
+
+logger = logging.getLogger(__name__)
 
 
 class SolarTimeService:
@@ -29,7 +32,7 @@ class SolarTimeService:
 
         self._fetch_solar_times()
         while self.sunrise_time is None or self.sunset_time is None:
-            print("Retrying solar times fetch in 10 seconds...")
+            logger.warning("Retrying solar times fetch in 10 seconds...")
             time.sleep(10)
             self._fetch_solar_times()
 
@@ -49,11 +52,13 @@ class SolarTimeService:
 
             self._sunrise_time = datetime.fromtimestamp(sunrise_timestamp).time()
             self._sunset_time = datetime.fromtimestamp(sunset_timestamp).time()
-            print(
-                f"Fetched solar times - Sunrise: {self._sunrise_time}, Sunset: {self._sunset_time}"
+            logger.info(
+                "Fetched solar times - Sunrise: %s, Sunset: %s",
+                self._sunrise_time,
+                self._sunset_time,
             )
         except Exception as e:
-            print(f"Error fetching solar times: {e}")
+            logger.error("Error fetching solar times: %s", e, exc_info=True)
 
     def is_daytime(self) -> bool:
         return self._sunrise_time <= datetime.now().time() < self._sunset_time
