@@ -83,7 +83,8 @@ chmod +x /home/admin/led-matrix-application/start.sh
 sudo tee /etc/systemd/system/ledmatrix.service > /dev/null << EOF
 [Unit]
 Description=LED Matrix Application Startup Script
-After=multi-user.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
